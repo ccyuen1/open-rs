@@ -181,7 +181,7 @@ pub fn that(path: impl AsRef<OsStr>) -> io::Result<()> {
 ///
 /// A [`std::io::Error`] is returned on failure. Because different operating systems
 /// handle errors differently it is recommend to not match on a certain error.
-pub fn with(path: impl AsRef<OsStr>, app: impl Into<String>) -> io::Result<()> {
+pub fn with(path: impl AsRef<OsStr>, app: impl AsRef<OsStr>) -> io::Result<()> {
     let mut cmd = with_command(path, app);
     cmd.status_without_output().into_result(&cmd)
 }
@@ -214,7 +214,7 @@ pub fn commands(path: impl AsRef<OsStr>) -> Vec<Command> {
 /// # Ok(())
 /// # }
 /// ```
-pub fn with_command(path: impl AsRef<OsStr>, app: impl Into<String>) -> Command {
+pub fn with_command(path: impl AsRef<OsStr>, app: impl AsRef<OsStr>) -> Command {
     os::with_command(path, app)
 }
 
@@ -233,10 +233,10 @@ pub fn that_in_background(path: impl AsRef<OsStr>) -> thread::JoinHandle<io::Res
 /// See documentation of [`with()`] for more details.
 pub fn with_in_background<T: AsRef<OsStr>>(
     path: T,
-    app: impl Into<String>,
+    app: impl AsRef<OsStr>,
 ) -> thread::JoinHandle<io::Result<()>> {
     let path = path.as_ref().to_os_string();
-    let app = app.into();
+    let app = app.as_ref().to_os_string();
     thread::spawn(|| with(path, app))
 }
 
@@ -270,7 +270,7 @@ pub fn that_detached(path: impl AsRef<OsStr>) -> io::Result<()> {
 /// straightforward error handling.
 ///
 /// See documentation of [`with()`] for more details.
-pub fn with_detached<T: AsRef<OsStr>>(path: T, app: impl Into<String>) -> io::Result<()> {
+pub fn with_detached<T: AsRef<OsStr>>(path: T, app: impl AsRef<OsStr>) -> io::Result<()> {
     #[cfg(any(not(feature = "shellexecute-on-windows"), not(windows)))]
     {
         let mut cmd = with_command(path, app);

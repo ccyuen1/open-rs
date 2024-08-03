@@ -17,12 +17,12 @@ pub fn commands<T: AsRef<OsStr>>(path: T) -> Vec<Command> {
     vec![cmd]
 }
 
-pub fn with_command<T: AsRef<OsStr>>(path: T, app: impl Into<String>) -> Command {
+pub fn with_command<T: AsRef<OsStr>>(path: T, app: impl AsRef<OsStr>) -> Command {
     let mut cmd = Command::new("cmd");
     cmd.arg("/c")
         .arg("start")
         .raw_arg("\"\"")
-        .raw_arg(wrap_in_quotes(app.into()))
+        .raw_arg(wrap_in_quotes(app))
         .raw_arg(wrap_in_quotes(path))
         .creation_flags(CREATE_NO_WINDOW);
     cmd
@@ -62,8 +62,8 @@ pub fn that_detached<T: AsRef<OsStr>>(path: T) -> std::io::Result<()> {
 }
 
 #[cfg(feature = "shellexecute-on-windows")]
-pub fn with_detached<T: AsRef<OsStr>>(path: T, app: impl Into<String>) -> std::io::Result<()> {
-    let app = wide(app.into());
+pub fn with_detached<T: AsRef<OsStr>>(path: T, app: impl AsRef<OsStr>) -> std::io::Result<()> {
+    let app = wide(app);
     let path = wide(path);
 
     let mut info = ffi::SHELLEXECUTEINFOW {
